@@ -98,6 +98,10 @@
             width: 100%;
         }
 
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
         .hero {
             text-align: center;
             padding: 80px 20px;
@@ -298,9 +302,9 @@
         <div class="container">
             <div class="logo">VALORANT DZ</div>
             <ul class="nav-links">
-                <li><a href="#" onclick="showPage('home')">Home</a></li>
-                <li><a href="#" onclick="showPage('privacy')">Privacy Policy</a></li>
-                <li><a href="#" onclick="showPage('terms')">Terms of Use</a></li>
+                <li><a href="#home" id="nav-home">Home</a></li>
+                <li><a href="#privacy" id="nav-privacy">Privacy Policy</a></li>
+                <li><a href="#terms" id="nav-terms">Terms of Use</a></li>
             </ul>
         </div>
     </nav>
@@ -606,16 +610,41 @@
     </footer>
 
     <script>
-        function showPage(pageName) {
-            const pages = document.querySelectorAll('.page-content');
-            pages.forEach(page => page.classList.remove('active'));
-            
-            const selectedPage = document.getElementById(pageName);
-            if (selectedPage) {
-                selectedPage.classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+        function updateNavigation() {
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Get current hash or default to home
+            const hash = window.location.hash || '#home';
+            const pageName = hash.substring(1);
+
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show the current page
+            const currentPage = document.getElementById(pageName);
+            if (currentPage) {
+                currentPage.classList.add('active');
+                // Add active class to corresponding nav link
+                const navLink = document.getElementById('nav-' + pageName);
+                if (navLink) {
+                    navLink.classList.add('active');
+                }
             }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', updateNavigation);
+
+        // Initialize on page load
+        window.addEventListener('load', updateNavigation);
     </script>
 </body>
 </html>
