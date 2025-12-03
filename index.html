@@ -3,49 +3,619 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VALORANT DZ – Clip Uploader</title>
+    <title>VALORANT DZ – TikTok Community Integration</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: #0d0d0d;
+            background: linear-gradient(135deg, #0a0e0a 0%, #1a0505 100%);
             color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 60px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
-        .card {
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-            background: #1a1a1a;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 70, 85, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 135, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
-        a {
-            color: #ff0055;
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        nav {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid rgba(0, 255, 135, 0.3);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff4655 0%, #00ff87 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
             text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        a:hover {
-            text-decoration: underline;
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff4655, #00ff87);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff4655 0%, #00ff87 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #b8b8b8;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        .card {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 255, 135, 0.2);
+        }
+
+        .card h2 {
+            color: #00ff87;
+            font-size: 32px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card h2::before {
+            content: '';
+            width: 4px;
+            height: 32px;
+            background: linear-gradient(180deg, #ff4655, #00ff87);
+            border-radius: 2px;
+        }
+
+        .card h3 {
+            color: #ff4655;
+            font-size: 24px;
+            margin: 30px 0 15px;
+        }
+
+        .card p, .card ul {
+            color: #d0d0d0;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card ul li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .card ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00ff87;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff4655, #00ff87);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, rgba(255, 70, 85, 0.1), rgba(0, 255, 135, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-box:hover {
+            border-color: #00ff87;
+            transform: scale(1.05);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff4655, #00ff87);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 255, 135, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0, 255, 135, 0.5);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(10, 10, 10, 0.8);
+            margin-top: 60px;
+            border-top: 2px solid rgba(0, 255, 135, 0.3);
+        }
+
+        footer p {
+            color: #888;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            color: #00ff87;
+            font-weight: bold;
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            nav .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>VALORANT DZ – TikTok Clip Uploader</h1>
-        <p>
-            This integration allows the <strong>VALORANT DZ</strong> Discord community to upload
-            Valorant clips directly to our TikTok account using an internal bot.
-        </p>
-        <p>
-            This is a private tool, not intended for public users.
-        </p>
+    <nav>
+        <div class="container">
+            <div class="logo">VALORANT DZ</div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showPage('home')">Home</a></li>
+                <li><a href="#" onclick="showPage('privacy')">Privacy Policy</a></li>
+                <li><a href="#" onclick="showPage('terms')">Terms of Use</a></li>
+            </ul>
+        </div>
+    </nav>
 
-        <br>
+    <div class="container">
+        <!-- HOME PAGE -->
+        <div id="home" class="page-content active">
+            <div class="hero">
+                <h1>TikTok Community Integration</h1>
+                <p>Empowering the VALORANT DZ Discord community to share epic gameplay moments directly to our official TikTok account through seamless bot integration.</p>
+                <span class="badge">Official Discord Integration</span>
+            </div>
 
-        <p>
-            <a href="privacy.html">Privacy Policy</a> •
-            <a href="terms.html">Terms</a>
-        </p>
+            <div class="card">
+                <h2>About This Integration</h2>
+                <p>
+                    The VALORANT DZ TikTok Integration is a sophisticated Discord bot that bridges our vibrant gaming community with our official TikTok presence. This powerful tool enables authorized staff members to curate and share the best VALORANT clips from our community members, creating a seamless content pipeline from Discord to TikTok.
+                </p>
+                <p style="margin-top: 20px;">
+                    Our community thrives on epic plays, clutch moments, and incredible team coordination. This integration ensures that outstanding gameplay moments get the visibility they deserve on one of the world's largest video platforms.
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="feature-box">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Community Focused</h3>
+                    <p>Showcase the best clips from our talented VALORANT DZ community members</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Private</h3>
+                    <p>Staff-only access with secure token management and data protection</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Upload</h3>
+                    <p>Seamless Discord-to-TikTok workflow with automated processing</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>How It Works</h2>
+                <ul>
+                    <li>Community members share their best VALORANT clips in designated Discord channels</li>
+                    <li>Authorized staff members review and select outstanding content</li>
+                    <li>Selected clips are uploaded to our official TikTok account via bot command</li>
+                    <li>Content is automatically formatted and optimized for TikTok's platform</li>
+                    <li>Community engagement is tracked and celebrated</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>Why This Integration Matters</h2>
+                <p>
+                    <span class="highlight">Community Growth:</span> By featuring community clips on TikTok, we amplify our members' best moments and attract new players to join our Discord.
+                </p>
+                <p style="margin-top: 15px;">
+                    <span class="highlight">Content Quality:</span> Our staff curation ensures only the highest-quality, most entertaining content represents the VALORANT DZ brand.
+                </p>
+                <p style="margin-top: 15px;">
+                    <span class="highlight">Engagement:</span> Members are motivated to improve their gameplay and share amazing moments, knowing they could be featured on our TikTok account.
+                </p>
+            </div>
+        </div>
+
+        <!-- PRIVACY PAGE -->
+        <div id="privacy" class="page-content">
+            <div class="hero">
+                <h1>Privacy Policy</h1>
+                <p>Your privacy and data security are our top priorities</p>
+            </div>
+
+            <div class="card">
+                <h2>Our Commitment to Privacy</h2>
+                <p>
+                    This privacy policy outlines how the VALORANT DZ TikTok Integration handles data. We are committed to transparency and protecting the privacy of our community members and staff.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Data Collection</h3>
+                <p>
+                    We <span class="highlight">do not collect, store, or process personal data</span> from community members or end users. This integration is designed as an internal tool exclusively for authorized VALORANT DZ Discord staff members.
+                </p>
+                <p style="margin-top: 15px;">
+                    The only data involved in this integration pertains to:
+                </p>
+                <ul>
+                    <li>Video files selected by staff for upload (temporary processing only)</li>
+                    <li>TikTok API access tokens for authentication (stored securely)</li>
+                    <li>Basic upload metadata (timestamps, success/failure logs)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>TikTok Integration Data</h3>
+                <p>
+                    To enable uploads to our official VALORANT DZ TikTok account, we securely store TikTok OAuth access tokens. These tokens are:
+                </p>
+                <ul>
+                    <li>Encrypted and stored in secure, access-controlled databases</li>
+                    <li>Used exclusively for uploading community clips to our account</li>
+                    <li>Never shared with third parties or external services</li>
+                    <li>Regularly rotated and updated following security best practices</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Video Content</h3>
+                <p>
+                    Video clips uploaded through this bot are:
+                </p>
+                <ul>
+                    <li>Processed temporarily in memory during upload</li>
+                    <li>Not permanently stored on our servers</li>
+                    <li>Uploaded directly to TikTok's platform per their terms of service</li>
+                    <li>Subject to TikTok's own privacy policy once published</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Security Measures</h3>
+                <p>
+                    We implement industry-standard security practices:
+                </p>
+                <ul>
+                    <li>End-to-end encryption for API communications</li>
+                    <li>Role-based access control (staff authorization only)</li>
+                    <li>Regular security audits and updates</li>
+                    <li>Secure credential management systems</li>
+                    <li>Audit logging for accountability</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Third-Party Services</h3>
+                <p>
+                    This integration interacts with:
+                </p>
+                <ul>
+                    <li><span class="highlight">TikTok API:</span> For uploading videos to our official account (subject to TikTok's privacy policy)</li>
+                    <li><span class="highlight">Discord Platform:</span> For bot functionality (subject to Discord's privacy policy)</li>
+                </ul>
+                <p style="margin-top: 15px;">
+                    We recommend reviewing the privacy policies of these platforms for complete information about how they handle data.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Contact & Questions</h3>
+                <p>
+                    For privacy-related questions, concerns, or data requests, please contact the VALORANT DZ Discord staff team through our official Discord server. We are committed to addressing all privacy inquiries promptly and transparently.
+                </p>
+            </div>
+        </div>
+
+        <!-- TERMS PAGE -->
+        <div id="terms" class="page-content">
+            <div class="hero">
+                <h1>Terms of Use</h1>
+                <p>Guidelines and responsibilities for using our TikTok integration</p>
+            </div>
+
+            <div class="card">
+                <h2>Agreement to Terms</h2>
+                <p>
+                    By accessing or using the VALORANT DZ TikTok Integration, you agree to be bound by these Terms of Use. This integration is provided as an internal tool for the exclusive use of authorized VALORANT DZ Discord community staff members.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Authorized Users</h3>
+                <p>
+                    Access to this integration is restricted to:
+                </p>
+                <ul>
+                    <li>Verified VALORANT DZ Discord staff members</li>
+                    <li>Users with explicitly granted permissions by server administrators</li>
+                    <li>Individuals who have been trained on proper usage protocols</li>
+                </ul>
+                <p style="margin-top: 15px;">
+                    <span class="highlight">Unauthorized access or use is strictly prohibited</span> and may result in removal from the community and potential legal action.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Permitted Use</h3>
+                <p>
+                    This integration may be used exclusively for:
+                </p>
+                <ul>
+                    <li>Uploading community-created VALORANT gameplay clips to the official VALORANT DZ TikTok account</li>
+                    <li>Curating and sharing high-quality content that represents our community</li>
+                    <li>Promoting community engagement and growth</li>
+                    <li>Content moderation and quality control purposes</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Prohibited Activities</h3>
+                <p>
+                    Users of this integration must NOT:
+                </p>
+                <ul>
+                    <li>Upload content that violates TikTok's Community Guidelines or Terms of Service</li>
+                    <li>Share copyrighted material without proper authorization</li>
+                    <li>Post offensive, discriminatory, or inappropriate content</li>
+                    <li>Use the integration for personal accounts or commercial purposes</li>
+                    <li>Attempt to reverse engineer, modify, or circumvent security measures</li>
+                    <li>Share access credentials or tokens with unauthorized individuals</li>
+                    <li>Use the bot to spam or post excessive content</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Content Responsibility</h3>
+                <p>
+                    Staff members who upload content through this integration are responsible for:
+                </p>
+                <ul>
+                    <li>Ensuring content compliance with all applicable laws and regulations</li>
+                    <li>Verifying that content creators have consented to sharing their clips</li>
+                    <li>Respecting intellectual property rights and copyright laws</li>
+                    <li>Following TikTok's community guidelines and content policies</li>
+                    <li>Maintaining the professional reputation of VALORANT DZ</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Limitations and Restrictions</h3>
+                <p>
+                    This integration is provided "as-is" with the following limitations:
+                </p>
+                <ul>
+                    <li><span class="highlight">Internal Use Only:</span> Not for public distribution or external use</li>
+                    <li><span class="highlight">No Commercial Use:</span> Cannot be used for profit or commercial purposes</li>
+                    <li><span class="highlight">No Resale:</span> The integration cannot be sold, licensed, or redistributed</li>
+                    <li><span class="highlight">Service Availability:</span> We do not guarantee uninterrupted access</li>
+                    <li><span class="highlight">Modification Rights:</span> We reserve the right to modify or discontinue the service</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Compliance Requirements</h3>
+                <p>
+                    All users must comply with:
+                </p>
+                <ul>
+                    <li>TikTok's Terms of Service and Community Guidelines</li>
+                    <li>Discord's Terms of Service and Community Guidelines</li>
+                    <li>VALORANT DZ server rules and policies</li>
+                    <li>Applicable copyright and intellectual property laws</li>
+                    <li>Data protection and privacy regulations</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Consequences of Violation</h3>
+                <p>
+                    Violation of these terms may result in:
+                </p>
+                <ul>
+                    <li>Immediate revocation of access to the integration</li>
+                    <li>Removal of staff privileges in the VALORANT DZ Discord</li>
+                    <li>Permanent ban from the community</li>
+                    <li>Legal action if violations involve illegal activity</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Disclaimers</h3>
+                <p>
+                    VALORANT DZ provides this integration without warranties of any kind. We are not responsible for:
+                </p>
+                <ul>
+                    <li>Content uploaded by staff members</li>
+                    <li>Third-party platform changes or outages</li>
+                    <li>Loss of data or service interruptions</li>
+                    <li>Consequences of misuse by authorized users</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Modifications to Terms</h3>
+                <p>
+                    We reserve the right to modify these Terms of Use at any time. Continued use of the integration after changes constitutes acceptance of the updated terms. Significant changes will be communicated to authorized users through Discord.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Contact Information</h3>
+                <p>
+                    For questions about these terms, clarification on usage policies, or to report violations, please contact the VALORANT DZ Discord staff team through our official Discord server channels.
+                </p>
+            </div>
+        </div>
     </div>
+
+    <footer>
+        <p>&copy; 2024 VALORANT DZ Community. All rights reserved.</p>
+        <p>This is an internal community tool. Not affiliated with Riot Games or TikTok.</p>
+    </footer>
+
+    <script>
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const selectedPage = document.getElementById(pageName);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+    </script>
 </body>
 </html>
